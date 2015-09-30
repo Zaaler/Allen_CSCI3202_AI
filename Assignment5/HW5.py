@@ -26,8 +26,17 @@ def main():
 	# Establish all the nodes neighbors
 	findNeighbors(Map)
 	
-	breakP()	
+	breakP()
+	# Include Snake Effect
+	lookSnake(Map)
 
+	# Restablish wall reward
+	reWall(Map)
+	
+	# Checking the map has the appropriate neighbors
+	checkMap(Map)
+
+	breakP()
 # CONVERT THE GIVEN TEXT VERSION INTO MORE READABLE VERSION
 def readMap(worldname):
 	array = []
@@ -96,26 +105,23 @@ def makeMap(readMap):
 
 # NEIGHBOR FINDING FUNCTION TO BE APPLIED TO THE ENTIRE MAP
 def findNeighbors(Map):
-	for j in range(len(Map)):
-		for i in range(len(Map[j])):
+	for j in range(0,len(Map)):
+		for i in range(0,len(Map[j])):
 			# IF IN THE TOP ROW OF THE MAP
 			if (j == 0):
 				# IF LEFT CORNER
 				if (i == 0):
+					#breakP()
 					Map[j][i].n.append(Map[j][i+1])
 					Map[j][i].n.append(Map[j+1][i])
-					Map[j][i].n.append(Map[j+1][i+1])
 				# IF RIGHT CORNER
-				if (i == len(Map[j])-1):
+				elif (i == len(Map[j])-1):
 					Map[j][i].n.append(Map[j][i-1])
 					Map[j][i].n.append(Map[j+1][i])
-					Map[j][i].n.append(Map[j+1][i-1])
 				# NOT CORNERS => MUST BE CENTER
 				else:
 					Map[j][i].n.append(Map[j][i-1])
-					Map[j][i].n.append(Map[j+1][i-1])
 					Map[j][i].n.append(Map[j+1][i])
-					Map[j][i].n.append(Map[j+1][i+1])
 					Map[j][i].n.append(Map[j][i+1])
 			# ELSE IF LAST ROW
 			elif (j == len(Map)-1):
@@ -123,44 +129,61 @@ def findNeighbors(Map):
 				if (i == 0):
 					Map[j][i].n.append(Map[j-1][i])
 					Map[j][i].n.append(Map[j][i+1])
-					Map[j][i].n.append(Map[j-1][i+1])
 				# IF BOTTOM RIGHT CORNER
-				if (i == len(Map[j])-1):
+				elif (i == len(Map[j])-1):
 					Map[j][i].n.append(Map[j-1][i])
 					Map[j][i].n.append(Map[j][i-1])
-					Map[j][i].n.append(Map[j-1][i-1])
 				# NOT CORNERS => MUST BE CENTER
 				else:
                                         Map[j][i].n.append(Map[j][i-1])
-                                        Map[j][i].n.append(Map[j-1][i-1])
                                         Map[j][i].n.append(Map[j-1][i])
-                                        Map[j][i].n.append(Map[j-1][i+1])
                                         Map[j][i].n.append(Map[j][i+1])
 			# IF IT IS NOT THE TOP OR BOTTOM ROW
 			# IF IT IS LEFT SIDE
 			elif (i == 0):
-				Map[j][i].n.append(Map[j-1][i])
-				Map[j][i].n.append(Map[j-1][i+1])
-				Map[j][i].n.append(Map[j][i+1])
-				Map[j][i].n.append(Map[j+1][i+1])
-				Map[j][i].n.append(Map[j+1][i])
+				if j != 0 or j != len(Map)-1:
+					#breakP()
+					Map[j][i].n.append(Map[j-1][i])
+					Map[j][i].n.append(Map[j][i+1])
+					Map[j][i].n.append(Map[j+1][i])
 			# IF IT IS RIGHT SIDE
 			elif (i == len(Map[j])-1):
 				Map[j][i].n.append(Map[j-1][i])
-				Map[j][i].n.append(Map[j-1][i-1])
 				Map[j][i].n.append(Map[j][i-1])
-				Map[j][i].n.append(Map[j+1][i-1])
 				Map[j][i].n.append(Map[j+1][i])
 			# ELSE IT IS IN THE CENTER OF THE MAP
 			else:
-				Map[j][i].n.append(Map[j-1][i-1])
+				#breakP()
 				Map[j][i].n.append(Map[j-1][i])
-				Map[j][i].n.append(Map[j-1][i+1])
 				Map[j][i].n.append(Map[j][i-1])
 				Map[j][i].n.append(Map[j][i+1])
-				Map[j][i].n.append(Map[j+1][i-1])
 				Map[j][i].n.append(Map[j+1][i])
-				Map[j][i].n.append(Map[j+1][i+1])
+			#print len(Map[j][i].n),
+		#print
+	
+# USED TO CHECK THE MAP FOR ANY NEW IMPLEMENTATIONS
+def checkMap(Map):
+	for j in range(0,len(Map)):
+		for i in range(0,len(Map[j])):
+			print Map[j][i].reward,
+		print
+
+# USED TO ESTABLISH THE SNAKE IMPACTED TILES
+def lookSnake(Map):
+	for j in range(0,len(Map)):
+		for i in range(0,len(Map[j])):
+			# SEARCH NODE NEIGHBORS FOR SNAKES	
+			for m in range(0, len(Map[j][i].n)):
+				if Map[j][i].n[m].t == 3:
+					Map[j][i].reward = Map[j][i].reward - 2
+
+def reWall(Map):
+	for j in range(0,len(Map)):
+		for i in range(0,len(Map[j])):
+			# SEARCH FOR WALL NODES AND SET TO 0	
+			if Map[j][i].t == 3:
+				Map[j][i].reward = 0
+
 
 if __name__ == '__main__':
     sys.exit(main())
