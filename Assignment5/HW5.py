@@ -48,14 +48,16 @@ def main():
 	delta = 1.0
 	i = 1
 	#while delta>error:
-	while i < 50:
+	while i < 10:
+		resetParent(Map)
 		Map = iterUtilities(Map,gam)
 		reWall(Map)
 		checkMap(Map)
 		print
 		i = i + 1	
 	
-	util_vals = results(Map)
+	util_vals = val_results(Map)
+	path = path_results(Map)
 	
 	breakP()
 	
@@ -123,6 +125,11 @@ def makeMap(readMap):
 			readMap[j][i] = mapNode(i,j,int(readMap[j][i]),None)
 	return readMap
 
+# RESET PARENT POINTERS FOR LAST RUN
+def resetParent(Map):
+	for j in range(len(Map)):
+		for i in range(len(Map[j])):
+			Map[j][i].p = []
 
 
 # NEIGHBOR FINDING FUNCTION TO BE APPLIED TO THE ENTIRE MAP
@@ -284,13 +291,26 @@ def iterUtilities(Map,gamma):
 	return Map
 #def reError(Map):
 	
-def results(Map):
+def val_results(Map):
 	values = []
 	last_row = len(Map) - 1
-	values.append(Map[last_row][0].utility)
-	for i in range(0,len(Map[last_row][0].p)):
-		values.append(Map[last_row][0].p[i].utility)
+	node = Map[last_row][0]
+	values.append(node.utility)
+	while(node.p != []):
+		node = node.p[0]
+		values.append(node.utility)
 	return values
+
+def path_results(Map):
+	values = []
+	last_row = len(Map) - 1
+	node = Map[last_row][0]
+	values.append([node.x, node.y])
+	while(node.p != []):
+		node = node.p[0]
+		values.append([node.x, node.y])
+	return values
+
 
 if __name__ == '__main__':
     sys.exit(main())
