@@ -201,7 +201,7 @@ def reWall(Map):
 	for j in range(0,len(Map)):
 		for i in range(0,len(Map[j])):
 			# SEARCH FOR WALL NODES AND SET TO 0	
-			if Map[j][i].t == 3:
+			if Map[j][i].t == 2:
 				Map[j][i].reward = 0
 				Map[j][i].utility = 0 
 
