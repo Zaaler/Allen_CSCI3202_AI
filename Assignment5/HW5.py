@@ -50,6 +50,7 @@ def main():
 	#while delta>error:
 	while i < 50:
 		iterUtilities(Map,gam)
+		reWall(Map)
 		checkMap(Map)
 		print
 		i = i + 1	
@@ -183,7 +184,7 @@ def findNeighbors(Map):
 def checkMap(Map):
 	for j in range(0,len(Map)):
 		for i in range(0,len(Map[j])):
-			print Map[j][i].utility,
+			print round(Map[j][i].utility,1),
 		print
 
 # USED TO ESTABLISH THE SNAKE IMPACTED TILES
@@ -201,7 +202,8 @@ def reWall(Map):
 		for i in range(0,len(Map[j])):
 			# SEARCH FOR WALL NODES AND SET TO 0	
 			if Map[j][i].t == 3:
-				Map[j][i].reward = 0 
+				Map[j][i].reward = 0
+				Map[j][i].utility = 0 
 
 # FIRST RUN SET REWARD AS UTILITIES
 def setUtilities(Map):
@@ -212,7 +214,8 @@ def setUtilities(Map):
 def iterUtilities(Map,gamma):
 	#g_loc = len(Map[0])-1
 	for j in range(0,len(Map)):
-                 for i in range(0,len(Map[j])-1):
+		breakP()
+                for i in range(0,len(Map[j])):
 			if Map[j][i].walkable == True:
 				# RE-EDITTING UTILITY ITERATION ROUTINE	
 				#breakP()
