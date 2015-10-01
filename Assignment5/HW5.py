@@ -49,12 +49,15 @@ def main():
 	i = 1
 	#while delta>error:
 	while i < 50:
-		iterUtilities(Map,gam)
+		Map = iterUtilities(Map,gam)
 		reWall(Map)
 		checkMap(Map)
 		print
 		i = i + 1	
-
+	
+	util_vals = results(Map)
+	
+	breakP()
 	
 # CONVERT THE GIVEN TEXT VERSION INTO MORE READABLE VERSION
 def readMap(worldname):
@@ -79,7 +82,7 @@ class mapNode:
 		self.t = map_type
 		
 		# Is this a wall
-		if (self.t == 2 | self.t == 3):
+		if (self.t == 2) | (self.t == 3) | (self.t == 50):
 			self.walkable = False
 		else:
 			self.walkable = True
@@ -160,7 +163,7 @@ def findNeighbors(Map):
 			# IF IT IS NOT THE TOP OR BOTTOM ROW
 			# IF IT IS LEFT SIDE
 			elif (i == 0):
-				if j != 0 or j != len(Map)-1:
+				if (j != 0) or (j != len(Map)-1):
 					#breakP()
 					Map[j][i].n.append(Map[j-1][i])
 					Map[j][i].n.append(Map[j][i+1])
@@ -213,9 +216,10 @@ def setUtilities(Map):
 
 def iterUtilities(Map,gamma):
 	#g_loc = len(Map[0])-1
+	#breakP()
 	for j in range(0,len(Map)):
-		breakP()
                 for i in range(0,len(Map[j])):
+			#breakP()
 			if Map[j][i].walkable == True:
 				# RE-EDITTING UTILITY ITERATION ROUTINE	
 				#breakP()
@@ -234,17 +238,17 @@ def iterUtilities(Map,gamma):
 				else:
 					top = Map[j-1][i]
 				# BOTTOM BOUNCE UP
-				if Map[j][i].y + 1 == len(Map):
+				if (Map[j][i].y + 1 == len(Map)):
 					bottom = Map[j][i]
 				else:				
 					bottom = Map[j+1][i]
 				# LEFT BOUNCE RIGHT
-				if Map[j][i].x - 1 == -1:
+				if (Map[j][i].x - 1 == -1):
 					left = Map[j][i]
 				else:
 					left = Map[j][i-1];
 				# RIGHT BOUNCE LEFT
-				if Map[j][i].x + 1 == len(Map[j]):
+				if (Map[j][i].x + 1 == len(Map[j])):
 					right = Map[j][i]
 				else:
 					right = Map[j][i+1]	
@@ -254,30 +258,39 @@ def iterUtilities(Map,gamma):
 				# DETERMINED BOUNCES, NOW LOOK AT NEIGHBORS(ACTIONS)
 				for m in range(0, len(Map[j][i].n)):
 					# MOVE RIGHT TO RIGHT NEIGHBOR
-					if Map[j][i].n[m].x == i + 1:
+					if (Map[j][i].n[m].x == i + 1):
 						act_val = (.8*right.utility + .1*top.utility + .1*bottom.utility)
 						act = Map[j][i].n[m]
 					# MOVE DOWN TO BOTTOM NEIGHBOR
-					elif Map[j][i].n[m].y == j + 1:
+					elif (Map[j][i].n[m].y == j + 1):
 						act_val = (.8*bottom.utility + .1*left.utility +.1*right.utility)	
 						act = Map[j][i].n[m]
 					# MOVE LEFT TO LEFT NEIGHBOR
-					elif Map[j][i].n[m].x == i - 1:
+					elif (Map[j][i].n[m].x == i - 1):
 						act_val = (.8*left.utility + .1*top.utility + .1*bottom.utility)
 						act = Map[j][i].n[m]
 					# MOVE UP TO TOP NEIGHBOR	
-					elif Map[j][i].n[m].y == j - 1:
+					elif (Map[j][i].n[m].y == j - 1):
 						act_val = (.8*top.utility + .1*left.utility + .1*right.utility)
 						act = Map[j][i].n[m]
-					if act_val > max_actval:
+					if (act_val > max_actval):
 						max_actval = act_val
 						max_act = act
 				#breakP()
-				Map[j][i].utility = Map[j][i].utility + gamma*max_actval
+				Map[j][i].utility = Map[j][i].reward + gamma*max_actval
+				Map[j][i].p.append(max_act)
 			else:
 				pass
+	return Map
 #def reError(Map):
 	
+def results(Map):
+	values = []
+	last_row = len(Map) - 1
+	values.append(Map[last_row][0].utility)
+	for i in range(0,len(Map[last_row][0].p)):
+		values.append(Map[last_row][0].p[i].utility)
+	return values
 
 if __name__ == '__main__':
     sys.exit(main())
