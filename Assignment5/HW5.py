@@ -12,7 +12,7 @@ def main():
 	txtMap = args[1]
 
 	# 2nd argument is the acceptable error level
-	e = args[2]
+	e = float(args[2])
 
 	# First, create an integer version of the map
 	rMap = readMap(txtMap)
@@ -37,6 +37,24 @@ def main():
 	checkMap(Map)
 
 	breakP()
+
+	# NOW PERFORM MDP ALGORITHM
+	# GIVEN: DISCOUNT FACTOR OF LIFE
+	gam = 0.9
+	setUtilities(Map)
+	checkMap(Map)
+	print 
+	error = e*(1.0-gam)/gam
+	delta = 1.0
+	i = 1
+	#while delta>error:
+	while i < 50:
+		iterUtilities(Map,gam)
+		checkMap(Map)
+		print
+		i = i + 1	
+
+	
 # CONVERT THE GIVEN TEXT VERSION INTO MORE READABLE VERSION
 def readMap(worldname):
 	array = []
@@ -165,7 +183,7 @@ def findNeighbors(Map):
 def checkMap(Map):
 	for j in range(0,len(Map)):
 		for i in range(0,len(Map[j])):
-			print Map[j][i].reward,
+			print Map[j][i].utility,
 		print
 
 # USED TO ESTABLISH THE SNAKE IMPACTED TILES
@@ -177,13 +195,86 @@ def lookSnake(Map):
 				if Map[j][i].n[m].t == 3:
 					Map[j][i].reward = Map[j][i].reward - 2
 
+# RESTABLISH WALL REWARDS
 def reWall(Map):
 	for j in range(0,len(Map)):
 		for i in range(0,len(Map[j])):
 			# SEARCH FOR WALL NODES AND SET TO 0	
 			if Map[j][i].t == 3:
-				Map[j][i].reward = 0
+				Map[j][i].reward = 0 
 
+# FIRST RUN SET REWARD AS UTILITIES
+def setUtilities(Map):
+	for j in range(0,len(Map)):
+                 for i in range(0,len(Map[j])):
+                 	Map[j][i].utility = Map[j][i].reward
+
+def iterUtilities(Map,gamma):
+	#g_loc = len(Map[0])-1
+	for j in range(0,len(Map)):
+                 for i in range(0,len(Map[j])-1):
+			if Map[j][i].walkable == True:
+				# RE-EDITTING UTILITY ITERATION ROUTINE	
+				#breakP()
+				# START IN TOP RIGHT CORNER
+				#if j == 0:
+					# DONT EVAL GOAL
+				#	x_g = g_loc - i - 1
+				#else:
+					# EVAL IN GOAL COLUMN
+				#	x_g = g_loc - i
+				
+				# DETERMINE IF ANY MOVE RESULTS IN BOUNCING BACK
+				# TOP BOUNCE DOWN
+				if (Map[j][i].y - 1 == -1):
+					top = Map[j][i]
+				else:
+					top = Map[j-1][i]
+				# BOTTOM BOUNCE UP
+				if Map[j][i].y + 1 == len(Map):
+					bottom = Map[j][i]
+				else:				
+					bottom = Map[j+1][i]
+				# LEFT BOUNCE RIGHT
+				if Map[j][i].x - 1 == -1:
+					left = Map[j][i]
+				else:
+					left = Map[j][i-1];
+				# RIGHT BOUNCE LEFT
+				if Map[j][i].x + 1 == len(Map[j]):
+					right = Map[j][i]
+				else:
+					right = Map[j][i+1]	
+				# CREATE VARIABLE TO STORE THE BEST MOVE FROM THE NEIGHBORS
+				max_actval = -1000	
+
+				# DETERMINED BOUNCES, NOW LOOK AT NEIGHBORS(ACTIONS)
+				for m in range(0, len(Map[j][i].n)):
+					# MOVE RIGHT TO RIGHT NEIGHBOR
+					if Map[j][i].n[m].x == i + 1:
+						act_val = (.8*right.utility + .1*top.utility + .1*bottom.utility)
+						act = Map[j][i].n[m]
+					# MOVE DOWN TO BOTTOM NEIGHBOR
+					elif Map[j][i].n[m].y == j + 1:
+						act_val = (.8*bottom.utility + .1*left.utility +.1*right.utility)	
+						act = Map[j][i].n[m]
+					# MOVE LEFT TO LEFT NEIGHBOR
+					elif Map[j][i].n[m].x == i - 1:
+						act_val = (.8*left.utility + .1*top.utility + .1*bottom.utility)
+						act = Map[j][i].n[m]
+					# MOVE UP TO TOP NEIGHBOR	
+					elif Map[j][i].n[m].y == j - 1:
+						act_val = (.8*top.utility + .1*left.utility + .1*right.utility)
+						act = Map[j][i].n[m]
+					if act_val > max_actval:
+						max_actval = act_val
+						max_act = act
+				#breakP()
+				Map[j][i].utility = Map[j][i].utility + gamma*max_actval
+			else:
+				pass
+#def reError(Map):
+	
 
 if __name__ == '__main__':
     sys.exit(main())
