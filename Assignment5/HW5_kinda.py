@@ -16,30 +16,39 @@ def main():
 
 	# First, create an integer version of the map
 	rMap = readMap(txtMap)
-	#print rMap
+	print rMap
 	
+	breakP()
 	# Now, convert the integer version into a list of nodes
 	Map = makeMap(rMap)
 	
+	breakP()
 	# Establish all the nodes neighbors
 	findNeighbors(Map)
 	
+	breakP()
 	# Include Snake Effect
-	# lookSnake(Map)
+	lookSnake(Map)
 
 	# Restablish wall reward
 	reWall(Map)
 	
+	# Checking the map has the appropriate neighbors
+	checkMap(Map)
+
+	breakP()
+
 	# NOW PERFORM MDP ALGORITHM
 	# GIVEN: DISCOUNT FACTOR OF LIFE
 	gam = 0.9
 	setUtilities(Map)
-	#checkMap(Map)
-	#print 
+	checkMap(Map)
+	print 
 	error = e*(1.0-gam)/gam
 	delta = 1.0
-	
-	while delta > error:
+	i = 1
+	#while delta>error:
+	while delta > gam:
 		# Reset the parent pointer to keep the most relevant move
 		resetParent(Map)
 
@@ -56,28 +65,17 @@ def main():
 		delta = reError(Map)
 		
 		# Display the current map progress
-		#checkMap(Map)
-		#print
-
-		
-	(util_vals,move) = val_results(Map)
-	
-	for k in range(0,len(util_vals)):
-		print move[k], util_vals[k],
-		(y1,x1) = move[k]
-		if k != len(util_vals)-1:
-			(y2,x2) = move[k+1]
-		if x1 + 1 == x2:
-			print 'RIGHT',
-		if y1 - 1 == y2:
-			print 'UP',
-		if util_vals[k] == 50:
-			print 'YUMMY APPLE'
+		checkMap(Map)
 		print
 
-	#print(util_vals)
-	#print(move)
+		
+	util_vals = val_results(Map)
+	path = path_results(Map)
 	
+	print(util_vals)
+	print(path)
+	
+	breakP()
 	
 # CONVERT THE GIVEN TEXT VERSION INTO MORE READABLE VERSION
 def readMap(worldname):
@@ -102,7 +100,7 @@ class mapNode:
 		self.t = map_type
 		
 		# Is this a wall
-		if (self.t == 2) | (self.t == 50):
+		if (self.t == 2) | (self.t == 3) | (self.t == 50):
 			self.walkable = False
 		else:
 			self.walkable = True
@@ -124,8 +122,8 @@ class mapNode:
 			# ANY WALL
 			self.reward = 0
 		if (self.t == 3):
-			# ANY SNAKE HAS NEGATIVE REWARD
-			self.reward = -2 
+			# ANY SNAKE HAS NO REWARD
+			self.reward = 0
 
 		# Establish all nodes at 0 utility	
 		self.utility = 0
@@ -135,7 +133,7 @@ class mapNode:
 
 		# Establish a neighbors array
 		self.n = []
-
+		
 		# Establish a parent array
 		self.p = []
 
@@ -225,13 +223,13 @@ def checkMap(Map):
 		print
 
 # USED TO ESTABLISH THE SNAKE IMPACTED TILES
-#def lookSnake(Map):
-#	for j in range(0,len(Map)):
-#		for i in range(0,len(Map[j])):
-#			# SEARCH NODE NEIGHBORS FOR SNAKES	
-#			for m in range(0, len(Map[j][i].n)):
-#				if Map[j][i].n[m].t == 3:
-#					Map[j][i].reward = Map[j][i].reward - 2
+def lookSnake(Map):
+	for j in range(0,len(Map)):
+		for i in range(0,len(Map[j])):
+			# SEARCH NODE NEIGHBORS FOR SNAKES	
+			for m in range(0, len(Map[j][i].n)):
+				if Map[j][i].n[m].t == 3:
+					Map[j][i].reward = Map[j][i].reward - 2
 
 # RESTABLISH WALL REWARDS
 def reWall(Map):
@@ -241,6 +239,7 @@ def reWall(Map):
 			if Map[j][i].t == 2:
 				Map[j][i].reward = 0
 				Map[j][i].utility = 0 
+
 # FIRST RUN SET REWARD AS UTILITIES
 def setUtilities(Map):
 	for j in range(0,len(Map)):
@@ -252,7 +251,6 @@ def iterUtilities(Map,gamma):
 	#breakP()
 	for j in range(0,len(Map)):
                 for i in range(0,len(Map[j])):
-			i = len(Map[j])-1-i
 			#breakP()
 			if Map[j][i].walkable == True:
 				# RE-EDITTING UTILITY ITERATION ROUTINE	
@@ -330,25 +328,25 @@ def reError(Map):
 # Prints the utilities result
 def val_results(Map):
 	values = []
-	path = []
 	last_row = len(Map) - 1
 	node = Map[last_row][0]
 	values.append(node.utility)
-	path.append((node.y,node.x))
-	Go = True
-	while(node.t != 50):
-		route = node
-		best = 0
-		for i in range(0,len(node.n)):
-			this = node.n[i]
-			if this.utility > best:
-				best = this.utility
-				bpath = (this.y,this.x)
-				route = this 
-		node = route
-		values.append(best)
-		path.append(bpath)
-	return (values, path)
+	while(node.p != []):
+		node = node.p[0]
+		values.append(node.utility)
+	return values
+
+# Prints the path result
+def path_results(Map):
+	values = []
+	last_row = len(Map) - 1
+	node = Map[last_row][0]
+	values.append([node.x, node.y])
+	while(node.p != []):
+		node = node.p[0]
+		values.append([node.x, node.y])
+	return values
+
 
 if __name__ == '__main__':
     sys.exit(main())
