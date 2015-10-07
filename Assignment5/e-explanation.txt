@@ -1,0 +1,24 @@
+In this lab, I tried to change the values of epsilon such that the solution to the problem would change. Epsilon was a design characteristic that determined the minimum accuracy of the difference between the current iteration and previous iterations estimate of error. The maximum change in utility was selected to compare against the epsilon determined value.
+
+First, I used the default of .5 which gave me the solution path to compare against.
+
+Then, I tried using .9. Again the solution was the same.
+
+Then, I looked at the code and saw that maybe if I maximize the value of the error bound and make the least precise measurement of the path, it will change. So I tried epsilon = 10. I ran into the error that I needed to increase my delta value. Otherwise, the iteration procedure would never occur. After correcting this problem, I continued to increase the error bound that was applied to my iteration procedure.
+
+I first noticed an error at epsilon = 1000. Now, I need to back track to when the error value was first present. I used the bisection method between 0 and 1000.
+500 - new answer [0,500]
+250 - old answer   [250,500]
+375 - new answer [250 275]
+312.5 - old answer [312.5 375]
+343.75- new answer     [312.5 343.75]
+328.13- new answer     [312.5 328.13]
+320.3 - old answer [320.3 328.13]
+324.2 - new answer [320.3 324.2]
+322.25- old answer [322.25 324.2]
+323.23- old answer [323.23 324.2]
+323.71- old answer [323.71 324.2]
+323.96- old answer [323.96 324.2]
+324.08- new answer
+
+At this point I tested the number 324, it resulted in the old answer. Then I tried 324.00001 and got the new answer. Therefore, any epsilon value greater than 324 will result in a different solution than the .5 value prescribed. 

@@ -37,7 +37,7 @@ def main():
 	#checkMap(Map)
 	#print 
 	error = e*(1.0-gam)/gam
-	delta = 1.0
+	delta = 10000.0
 	
 	while delta > error:
 		# Reset the parent pointer to keep the most relevant move
