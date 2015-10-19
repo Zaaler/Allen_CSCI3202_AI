@@ -41,53 +41,79 @@ class mapNode:
 		self.cost = 0
 		self.p = None
 
+# NEIGHBOR FINDING FUNCTION TO BE APPLIED TO THE ENTIRE MAP
 def findNeighbors(Map):
-	for j in range(len(Map)):
-		for i in range(len(Map[j])):
+	for j in range(0,len(Map)):
+		for i in range(0,len(Map[j])):
+			# IF IN THE TOP ROW OF THE MAP
 			if (j == 0):
-				if (i == 0) :
+				# IF LEFT CORNER
+				if (i == 0):
+					#breakP()
 					Map[j][i].n.append(Map[j][i+1])
 					Map[j][i].n.append(Map[j+1][i])
 					Map[j][i].n.append(Map[j+1][i+1])
-				if (i == len(Map[j])-1):
+				# IF RIGHT CORNER
+				elif (i == len(Map[j])-1):
 					Map[j][i].n.append(Map[j][i-1])
 					Map[j][i].n.append(Map[j+1][i])
 					Map[j][i].n.append(Map[j+1][i-1])
+				# NOT CORNERS => MUST BE CENTER
 				else:
 					Map[j][i].n.append(Map[j][i-1])
 					Map[j][i].n.append(Map[j+1][i-1])
 					Map[j][i].n.append(Map[j+1][i])
 					Map[j][i].n.append(Map[j+1][i+1])
 					Map[j][i].n.append(Map[j][i+1])
+			# ELSE IF LAST ROW
 			elif (j == len(Map)-1):
+				# IF BOTTOM LEFT CORNER
 				if (i == 0):
 					Map[j][i].n.append(Map[j-1][i])
 					Map[j][i].n.append(Map[j][i+1])
 					Map[j][i].n.append(Map[j-1][i+1])
-				if (i == len(Map[j])-1):
+				# IF BOTTOM RIGHT CORNER
+				elif (i == len(Map[j])-1):
 					Map[j][i].n.append(Map[j-1][i])
 					Map[j][i].n.append(Map[j][i-1])
 					Map[j][i].n.append(Map[j-1][i-1])
+				# NOT CORNERS => MUST BE CENTER
 				else:
                                         Map[j][i].n.append(Map[j][i-1])
                                         Map[j][i].n.append(Map[j-1][i-1])
                                         Map[j][i].n.append(Map[j-1][i])
                                         Map[j][i].n.append(Map[j-1][i+1])
                                         Map[j][i].n.append(Map[j][i+1])
+			# IF IT IS NOT THE TOP OR BOTTOM ROW
+			# IF IT IS LEFT SIDE
 			elif (i == 0):
-				Map[j][i].n.append(Map[j-1][i])
-				Map[j][i].n.append(Map[j-1][i+1])
-				Map[j][i].n.append(Map[j][i+1])
-				Map[j][i].n.append(Map[j+1][i+1])
-				Map[j][i].n.append(Map[j+1][i])
+				if j != 0 or j != len(Map)-1:
+					#breakP()
+					Map[j][i].n.append(Map[j-1][i])
+					Map[j][i].n.append(Map[j-1][i+1])
+					Map[j][i].n.append(Map[j][i+1])
+					Map[j][i].n.append(Map[j+1][i+1])
+					Map[j][i].n.append(Map[j+1][i])
+			# IF IT IS RIGHT SIDE
 			elif (i == len(Map[j])-1):
 				Map[j][i].n.append(Map[j-1][i])
 				Map[j][i].n.append(Map[j-1][i-1])
 				Map[j][i].n.append(Map[j][i-1])
 				Map[j][i].n.append(Map[j+1][i-1])
 				Map[j][i].n.append(Map[j+1][i])
-
-#def heuristic_cost_estimate(loc, goal)
+			# ELSE IT IS IN THE CENTER OF THE MAP
+			else:
+				#breakP()
+				Map[j][i].n.append(Map[j-1][i-1])
+				Map[j][i].n.append(Map[j-1][i])
+				Map[j][i].n.append(Map[j-1][i+1])
+				Map[j][i].n.append(Map[j][i-1])
+				Map[j][i].n.append(Map[j][i+1])
+				Map[j][i].n.append(Map[j+1][i-1])
+				Map[j][i].n.append(Map[j+1][i])
+				Map[j][i].n.append(Map[j+1][i+1])
+			#print len(Map[j][i].n),
+		#print
 	
 # FOUND CODE FOR THE ASTAR FUNCTION ON WIKIPEDIA PAGE
 def Astar(Map,goal):
