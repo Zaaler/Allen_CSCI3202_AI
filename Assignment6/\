@@ -245,8 +245,7 @@ def doMarginal(net,argies):
 			if state == 'true':
 				for combos in a.keys():
 					for combo1 in b.keys():
-						if combos == 'XcT':
-							prob += net[3].p[combos]*pars[0].p[combo1]
+						prob += net[3].p[combos]*pars[0].p[combo1]
 	
 
 			#if state == 'true':
