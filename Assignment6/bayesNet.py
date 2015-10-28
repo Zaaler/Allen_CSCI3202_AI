@@ -43,7 +43,7 @@ def main():
         if args.p != None:
                 parse = parser(args.p)
 		print parse
-		breakP()
+		#breakP()
 		doPrior(pnet,parse)
 
 	# Show the updated Probability Chart:
@@ -51,13 +51,13 @@ def main():
 	
 	if args.j != None:
 		parse = parser(args.j)
-		breakP()
+		#breakP()
 		joint = doJoint(pnet,parse)
 		print "Joint Probability is: ", joint
 	
 	elif args.m != None:
 		parse = parser(args.m)
-		breakP()
+		#breakP()
 		marg = doMarginal(pnet,parse)
 		print "Marginal Probability is: ", marg
 	
