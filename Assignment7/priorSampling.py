@@ -13,14 +13,23 @@ def main():
 	0.32,   0.56,   0.68,   0.32,   0.27,   0.77,   0.74,   0.79,   0.11,   0.29,   0.69,   0.99,   0.79,   0.21,   0.20,   0.43,
 	0.81,   0.90,   0.00,   0.91,   0.01]
 	
+	print ""
 	# Problem 1 - USING PRIOR SAMPLING
+	print "PROBLEM #1 SOLUTIONS"
+	print ""
 	s_prob = priorSampling(samples)
-	print s_prob
+	#print s_prob
+	priorProb(s_prob)
+	print ""
+	# Problem 3 - Rejection Sampling
+	print "PROBLEM #3 SOLUTIONS"
+	print ""
+	rejectPc(samples)
+	rejectPc_r(samples)
+	rejectPs_wg(samples)
+	rejectPs_cwg(samples)
+	print ""
 
-	# A) P(c = true)
-	prob = calcProb(s_prob)
-	
-	print prob
 
 def priorSampling(samples):
 	results = []
@@ -138,86 +147,122 @@ def priorSampling(samples):
 		results.append(([cloud, sprinkler, rain, wetgrass]))
 	return results
 
-def calcProb(results):
+def priorProb(results):
 	# Different Probabilities
 	c = 0
-	cs = 0
-	csr = 0
-	csrwg = 0
-	cswg = 0
-	cr = 0
-	crwg = 0
-	cwg = 0
 	s = 0
-	sr = 0
-	srwg = 0
-	swg =0
 	r = 0
-	rwg = 0
 	wg = 0
-
-	# Different Variables
-	c_count = 0
-	s_count = 0
-	r_count = 0
-	wg_count = 0
+	cr = 0
+	rc = 0
+	swg = 0
+	wgc = 0
+	wgcs = 0
+	count = 0
 
 	for i in results:
-		c_count += 1
+		# Cloudy True
 		if i[0] == True:
 			c += 1
-			s_count += 1
-			if i[1] == True:
-				cs += 1
-				r_count += 1
-				if i[2] == True:
-					csr +=1
-					wg_count += 1
-					if i[3] == True:
-						csrwg += 1
-				else:
-					wg_count += 1
-					if i[3] == True:
-						cswg += 1
-			else:
-				r_count += 1
-				if i[2] == True:
-					cr += 1
-					wg_count += 1
-					if i[3] == True:
-						crwg += 1
-				else:
-					wg_count += 1
-					if i[3] == True:
-						cwg += 1
-		else:
-			s_count += 1
-			if i[1] == True:
-				s += 1
-				r_count += 1
-				if i[2] == True:
-					sr += 1
-					wg_count += 1
-					if i[3] == True:
-						srwg += 1
-				else:
-					wg_count += 1
-					if i[3] == True:
-						swg += 1
-			else:
-				r_count += 1
-				if i[2] == True:
-					r += 1
-					wg_count += 1
-					if i[3] == True:
-						rwg += 1
-				else:
-					wg_count += 1
-					if i[3] == True:
-						wg += 1
-	totals = ([c, cs, csr, csrwg, crwg, cwg, s, sr, srwg, swg, rwg, wg])
+			if i[2] == True:
+				cr += 1
+		if i[1] == True:
+			s += 1
+			if i[3] == True:
+				swg += 1
+		if i[2] == True:
+			r += 1
+			if i[0] == True:
+				rc += 1
+		if i[3] == True:
+			wg += 1
+			if i[0] == True:
+				wgc += 1
+				if i[1] == True:
+					wgcs += 1
+		count += 1
 	
-	return totals
+	# Print out results
+	print "Probability Cloudy is True:", float(c)/count
+	print "Probability Cloudy given Rain:", float(rc)/r
+	print "Probability Sprinklers given Wet Grass:", float(swg)/wg
+	print "Probability Sprinklers given Cloudy and Wet Grass:", float(wgcs)/wgc
+
+def rejectPc(samples):
+	c = 0
+	cr = 0
+	count = 0
+	for i in samples:
+		if i < .5:
+			#print i
+			c += 1
+		count += 1
+	print "Rejection Probability of Clouds:", float(c)/count
+
+def rejectPc_r(samples):
+	cr = 0
+	r = 0
+	count = 0
+	i = 0
+	while i < len(samples)-1:
+		# CLOUDY TRUE
+		if samples[i] < .5:
+			i += 1
+			# RAINY TRUE
+			if samples[i] < .8:
+				cr += 1
+		# CLOUDY FALSE only care about the times that cloudy is true given rain true
+		else:
+			i += 1
+			if samples[i] < .2:
+				r += 1
+	count = cr + r		
+	print "Rejection Probabilty of Clouds given Rain:", float(cr)/count
+
+def rejectPs_wg(samples):
+	swg = 0
+	wg = 0
+        # Need to sample all 4 fields for wg
+        results = priorSampling(samples)
+        i = 0
+        while i < len(results):
+                # WETGRASS TRUE
+                if results[i][3] == True:
+                        wg += 1
+                        #print results[i]
+                        if results[i][1] == True:
+                                swg += 1
+                i += 1
+        #print scwg
+        #print cwg
+        print "Rejection Probability of Sprinklers given Wet Grass:", float(swg)/wg
+
+
+
+
+def rejectPs_cwg(samples):
+	cwg = 0
+	scwg = 0
+	# Need to sample all 4 fields for wg
+	results = priorSampling(samples)	
+	# Place to hold appropriate samples
+	i = 0
+	while i < len(results):
+		# CLOUDS OR WETGRASS TRUE
+		if (results[i][0] == True) and (results[i][3] == True):
+			cwg += 1
+			#print results[i]
+			if results[i][1] == True:
+				scwg += 1
+		i += 1
+	#print scwg
+	#print cwg
+	print "Rejection Probability of Sprinklers given Cloudy and Wet Grass:", float(scwg)/cwg
+
+
+
+
+
 if __name__ == '__main__':
 	sys.exit(main())
 
