@@ -61,7 +61,7 @@ def analyze_se(s,e):
 			#	print "ITS GOOD"
 			p_ex[given+evidence] = float(1+count_e)/(26+count_s)
 			#breakP()
-			print "P(", evidence, "|", given, ") =", float(1+count_e)/(26+count_s)
+			#print "P(", evidence, "|", given, ") =", float(1+count_e)/(26+count_s)
 			count_e = 0
 			count_s = 0
 	return p_ex	
@@ -93,7 +93,7 @@ def analyze_s2s(s,e):
                                                 count_ss += 1
         
                         ss[state1+state2] = float(1+count_ss)/(27+count_s)
-			print "P(", state2, "|", state1, ") =", float(1+count_ss)/(27+count_s)
+			#print "P(", state2, "|", state1, ") =", float(1+count_ss)/(27+count_s)
                         #print evidence, given
                         count_ss = 0
                         count_s = 0
@@ -118,20 +118,20 @@ def printDict(dictionary):
 	if len(dictionary) == 729:
 		chars = '_abcdefghijklmnopqrstuvwxyz'
 		letters = 27
-	#for j in range(0,len(chars)):
-	#	print '    ',chars[j],'  ',
-	#print
+	for j in range(0,len(chars)):
+		print '    ',chars[j],'  ',
+	print
 	for i in dictionary:
 		count += 1
 		if count % letters == 1:
-	#		print  chars[counter],
+			print  chars[counter],
 			counter += 1
-	#	print " %.3f " % dictionary[i]," ",
+		print " %.3f " % dictionary[i]," ",
 		total += dictionary[i]
 		if count % letters == 0:
 			sum_ps.append(total)
 			total = 0
-	#		print
+			print
 	#breakP()
 	return sum_ps
 
